@@ -27,7 +27,12 @@ public class DataSeeder {
         return args -> {
             if (hotelRepo.count() > 0) return; // avoid re-seeding on every restart
 
-            Hotel hotel = new Hotel(null, "Grand Palace Hotel", "123 MG Road", "Visakhapatnam", "contact@grandpalace.com", null);
+            Hotel hotel = new Hotel();
+            hotel.setName("Grand Palace Hotel");
+            hotel.setAddress("123 MG Road");
+            hotel.setCity("Visakhapatnam");
+            hotel.setContactInfo("contact@grandpalace.com");
+            hotel = hotelRepo.save(hotel);	
             hotel = hotelRepo.save(hotel);
 
             RoomType deluxe = new RoomType(hotel, "Deluxe", new BigDecimal("4500.00"), 2, "Deluxe room with sea view");
