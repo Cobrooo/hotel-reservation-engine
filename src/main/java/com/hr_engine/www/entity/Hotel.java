@@ -1,5 +1,7 @@
 package com.hr_engine.www.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -38,6 +40,7 @@ public class Hotel {
     private String contactInfo;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<RoomType> roomTypes;
 
 	public Long getId() {

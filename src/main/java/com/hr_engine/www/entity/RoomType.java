@@ -1,5 +1,7 @@
 package com.hr_engine.www.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -44,6 +46,7 @@ public class RoomType {
     private String description;
 
     @OneToMany(mappedBy = "roomType", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Room> rooms;
 
     public RoomType(Hotel hotel, String name, BigDecimal basePrice, Integer maxOccupancy, String description) {
