@@ -49,6 +49,10 @@ public class RoomType {
     @JsonIgnore
     private List<Room> rooms;
 
+    public RoomType() {
+    	
+    }
+    
     public RoomType(Hotel hotel, String name, BigDecimal basePrice, Integer maxOccupancy, String description) {
         this.hotel = hotel;
         this.name = name;
@@ -56,5 +60,61 @@ public class RoomType {
         this.maxOccupancy = maxOccupancy;
         this.description = description;
     }
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+	public Hotel getHotel() {
+		return hotel;
+	}
+
+	public void setHotel(Hotel hotel) {
+		this.hotel = hotel;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public BigDecimal getBasePrice() {
+		return basePrice;
+	}
+
+	public void setBasePrice(BigDecimal basePrice) {
+		this.basePrice = basePrice;
+	}
+
+	public Integer getMaxOccupancy() {
+		return maxOccupancy;
+	}
+
+	public void setMaxOccupancy(Integer maxOccupancy) {
+		this.maxOccupancy = maxOccupancy;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public List<Room> getRooms() {
+		return rooms;
+	}
+
+	public void setRooms(List<Room> rooms) {
+		this.rooms = rooms;
+	}
     
 }

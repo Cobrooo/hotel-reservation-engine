@@ -42,6 +42,10 @@ public class Hotel {
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<RoomType> roomTypes;
+    
+    public Hotel() {
+    	
+    }
 
 	public Long getId() {
 		return id;
