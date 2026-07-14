@@ -25,7 +25,12 @@ public class AvailabilityService {
 
     // Statuses that block a room from being booked
     private static final List<ReservationStatus> ACTIVE_STATUSES =
-            Arrays.asList(ReservationStatus.CONFIRMED, ReservationStatus.PENDING);
+            Arrays.asList(
+                    ReservationStatus.CONFIRMED,
+                    ReservationStatus.PENDING,
+                    ReservationStatus.HELD,
+                    ReservationStatus.PAYMENT_PROCESSING
+            );
 
     public boolean isRoomAvailable(Long roomId, LocalDate checkIn, LocalDate checkOut) {
         validateDates(checkIn, checkOut);
