@@ -3,6 +3,7 @@ package com.hr_engine.www.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.hr_engine.www.enums.ReservationStatus;
 
 import jakarta.persistence.Column;
@@ -34,6 +35,7 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id", nullable = false)
+    @JsonIgnore
     private Room room;
 
     @Column(nullable = false)
