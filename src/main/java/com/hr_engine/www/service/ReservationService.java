@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.hr_engine.www.dto.HoldRequestDto;
+import com.hr_engine.www.dto.PayRequestDto;
+import com.hr_engine.www.dto.PaymentRequestDto;
+import com.hr_engine.www.dto.PaymentResult;
 import com.hr_engine.www.entity.Reservation;
 import com.hr_engine.www.entity.Room;
 import com.hr_engine.www.enums.ReservationStatus;
@@ -26,7 +29,13 @@ public class ReservationService {
 
     @Autowired
     private BookingLockService bookingLockService;
+    
+    @Autowired
+    private PaymentGatewayService paymentGatewayService;
 
+    @Autowired
+    private ReservationStateMachineService stateMachineService;
+    
     public Reservation holdRoom(HoldRequestDto request) {
         Long roomId = request.getRoomId();
 
@@ -68,5 +77,44 @@ public class ReservationService {
             bookingLockService.unlockRoom(roomId);
             throw e;
         }
+    }
+    
+    public Reservation processPayment(Long reservationId, PayRequestDto payRequest) {
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found with id: " + reservationId));
+
+        // Step 1: HELD -> PAYMENT_PROCESSING
+        stateMachineService.validateTransition(reservation.getStatus(), ReservationStatus.PAYMENT_PROCESSING);
+        reservation.setStatus(ReservationStatus.PAYMENT_PROCESSING);
+        reservationRepository.save(reservation);
+
+        // Step 2: Call the mock payment gateway
+        double amount = reservation.getRoom().getRoomType().getBasePrice().doubleValue();
+        PaymentResult result = paymentGatewayService.processPayment(
+                new PaymentRequestDto() {{
+                    setSimulateFailure(payRequest.isSimulateFailure());
+                    setCardNumber(payRequest.getCardNumber());
+                }},
+                amount
+        );
+
+        Long roomId = reservation.getRoom().getId();
+
+        // Step 3: Transition based on payment outcome
+        if (result.isSuccess()) {
+            stateMachineService.validateTransition(reservation.getStatus(), ReservationStatus.CONFIRMED);
+            reservation.setStatus(ReservationStatus.CONFIRMED);
+        } else {
+            stateMachineService.validateTransition(reservation.getStatus(), ReservationStatus.FAILED);
+            reservation.setStatus(ReservationStatus.FAILED);
+        }
+
+        Reservation saved = reservationRepository.save(reservation);
+
+        // Step 4: Release the Redis lock either way - booking is now permanent (CONFIRMED)
+        // or the room needs to go back to the available pool (FAILED)
+        bookingLockService.unlockRoom(roomId);
+
+        return saved;
     }
 }
