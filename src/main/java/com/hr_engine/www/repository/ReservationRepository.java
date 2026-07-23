@@ -1,6 +1,7 @@
 package com.hr_engine.www.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,4 +37,10 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("checkOutDate") LocalDate checkOutDate,
             @Param("activeStatuses") List<ReservationStatus> activeStatuses
     );
+    
+    
+    @Query("SELECT r FROM Reservation r WHERE r.status = 'HELD' AND r.createdAt < :cutoffTime")
+    List<Reservation> findStaleHeldReservations(@Param("cutoffTime") LocalDateTime cutoffTime);
+    
+    
 }
